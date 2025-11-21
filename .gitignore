@@ -35,5 +35,7 @@ notification.mp3
 /cache.json*
 /config_states/
 /node_modules
+bog-platform/**/node_modules
+bog-platform/**/.env
 /package-lock.json
 /.coverage*
