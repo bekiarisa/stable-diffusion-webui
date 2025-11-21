@@ -1,0 +1,30 @@
+openapi: 3.1.0
+info:
+  title: B.O.G ICO Platform API
+  version: 0.1.0
+servers:
+  - url: https://api.blueoceangrid.io
+paths:
+  /api/ico/metrics:
+    get:
+      summary: Get ICO metrics
+      responses:
+        '200':
+          description: Success
+  /api/ai:
+    post:
+      summary: Chat with B.O.Genius
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messages:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Success
