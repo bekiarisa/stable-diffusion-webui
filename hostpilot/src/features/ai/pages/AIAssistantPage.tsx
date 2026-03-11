@@ -1,38 +1,45 @@
 import { useMemo, useState } from 'react';
-import { Card, PageHeader, Button, Badge } from '@/design/ui';
+import { Badge, Button, Card, PageHeader } from '@/design/ui';
 import { aiService } from '@/services/aiService';
+import { useI18n } from '@/i18n/i18nContext';
 
 export const AIAssistantPage = () => {
-  const [text, setText] = useState('Χρειάζομαι ηλεκτρολόγο, κάηκε η ασφάλεια.');
-  const parsed = useMemo(() => aiService.parseDispatcherRequest(text), [text]);
+  const { dict, lang } = useI18n();
+  const [conversation, setConversation] = useState('Χρειάζομαι καθαρισμό Airbnb αύριο στις 12:00.');
+  const parsed = useMemo(() => aiService.parseDispatcherRequest(conversation), [conversation]);
+
+  const actions = lang === 'el'
+    ? ['Δημιουργία lead request', 'Αυτόματη πρόταση επαγγελματιών', 'Σύνδεση με σχετικό ακίνητο', 'Σχέδιο μηνύματος προς επαγγελματία']
+    : ['Create lead request', 'Auto-match professionals', 'Link related property', 'Draft professional message'];
 
   return (
     <div className="space-y-4">
-      <PageHeader title="AI Assistant / Dispatcher" subtitle="Natural language parsing για category, urgency, area, Erasmus/investment intent." />
-      <Card>
-        <textarea className="h-28 w-full rounded-xl border p-3 text-sm" value={text} onChange={(e) => setText(e.target.value)} />
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Badge tone="brand">Category: {parsed.category}</Badge>
-          <Badge tone={parsed.urgency === 'urgent' ? 'warning' : 'neutral'}>Urgency: {parsed.urgency}</Badge>
-          <Badge>Area: {parsed.city}</Badge>
-          {parsed.erasmus ? <Badge tone="success">Erasmus relevant</Badge> : null}
-          {parsed.investmentIntent ? <Badge tone="success">Investment intent</Badge> : null}
-        </div>
-        <div className="mt-4 flex gap-2"><Button>Generate request draft</Button><Button variant="secondary">Match professionals</Button></div>
-      </Card>
-      <Card>
-        <h3 className="font-semibold">Structured payload preview</h3>
-        <pre className="mt-2 overflow-auto rounded-xl bg-slate-50 p-3 text-xs">{JSON.stringify(parsed, null, 2)}</pre>
-      </Card>
-      <Card>
-        <h3 className="font-semibold">AI Property Tools</h3>
-        <ul className="mt-2 list-disc pl-5 text-sm text-slate-600">
-          <li>Listing generator (EL/EN, portal/social/premium variants)</li>
-          <li>Guest messages (check-in/check-out/welcome/issues)</li>
-          <li>Captions, hooks, reel scripts and CTA</li>
-          <li>House manual generator with bilingual export</li>
-        </ul>
-      </Card>
+      <PageHeader title={dict.ai.title} subtitle={dict.ai.subtitle} />
+      <div className="grid gap-4 xl:grid-cols-2">
+        <Card className="space-y-3">
+          <h3 className="font-semibold">{dict.ai.input}</h3>
+          <textarea value={conversation} onChange={(e) => setConversation(e.target.value)} className="h-56 w-full rounded-xl border p-3 text-sm" />
+          <div className="flex gap-2">
+            <Button>{lang === 'el' ? 'Αποστολή' : 'Send'}</Button>
+            <Button variant="secondary">{lang === 'el' ? 'Νέο αίτημα' : 'New request'}</Button>
+          </div>
+        </Card>
+
+        <Card className="space-y-3">
+          <h3 className="font-semibold">{lang === 'el' ? 'Δομημένη ερμηνεία' : 'Structured interpretation'}</h3>
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="brand">category: {parsed.category}</Badge>
+            <Badge tone={parsed.urgency === 'urgent' ? 'warning' : 'neutral'}>urgency: {parsed.urgency}</Badge>
+            <Badge>area: {parsed.city}</Badge>
+            {parsed.erasmus ? <Badge tone="success">erasmus</Badge> : null}
+            {parsed.investmentIntent ? <Badge tone="success">investment</Badge> : null}
+          </div>
+          <h4 className="font-medium">{dict.ai.suggestions}</h4>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
+            {actions.map((a) => <li key={a}>{a}</li>)}
+          </ul>
+        </Card>
+      </div>
     </div>
   );
 };

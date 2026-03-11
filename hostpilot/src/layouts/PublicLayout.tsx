@@ -1,29 +1,31 @@
 import { Link, Outlet } from 'react-router-dom';
-import { publicNav, roleHome } from '@/core/constants/navigation';
-import { useAuth } from '@/features/auth/authContext';
+import { LanguageSwitcher } from '@/design/ui';
+import { useI18n } from '@/i18n/i18nContext';
 
 export const PublicLayout = () => {
-  const { user, activeRole, switchRole } = useAuth();
+  const { dict } = useI18n();
+  const nav = [
+    ['/', dict.nav.home],
+    ['/features', dict.nav.features],
+    ['/pricing', dict.nav.pricing],
+    ['/categories', dict.nav.categories],
+    ['/areas', dict.nav.areas],
+    ['/access', dict.nav.access],
+    ['/role-entry', dict.nav.roleEntry],
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
+      <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div>
             <p className="text-xs uppercase tracking-wide text-brand-600">hostpilot.gr · hostpilot.eu · hostpilot.com</p>
-            <h1 className="text-2xl font-bold text-brand-900">HostPilot</h1>
+            <h1 className="text-2xl font-bold text-brand-900">{dict.brand}</h1>
           </div>
           <nav className="flex flex-wrap gap-2 text-sm">
-            {publicNav.map((item) => (
-              <Link key={item.to} className="rounded-lg px-3 py-1.5 hover:bg-brand-50" to={item.to}>{item.label}</Link>
-            ))}
+            {nav.map(([to, label]) => <Link key={to} to={to} className="rounded-lg px-3 py-1.5 hover:bg-brand-50">{label}</Link>)}
           </nav>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500">{user.displayName}</span>
-            <select className="rounded border p-1" value={activeRole} onChange={(e) => switchRole(e.target.value as typeof activeRole)}>
-              {user.roles.map((role) => <option key={role} value={role}>{role}</option>)}
-            </select>
-            <Link className="rounded bg-brand-600 px-2 py-1 text-white" to={roleHome[activeRole]}>Dashboard</Link>
-          </div>
+          <LanguageSwitcher />
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-6"><Outlet /></main>
